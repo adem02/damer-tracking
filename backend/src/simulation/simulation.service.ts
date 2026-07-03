@@ -12,7 +12,7 @@ import {
 import type { NewPosition } from '../machines/domain/machine.types';
 import { StreamingService } from '../streaming/streaming.service';
 import seedData from './elda_seed_dameuses.json';
-import type { Seed } from './simulation.types';
+import type { Seed, SeedMachine, SeedPosition } from './simulation.types';
 
 const SEED: Seed = seedData;
 
@@ -37,24 +37,7 @@ export class SimulationService implements OnModuleInit, OnModuleDestroy {
 
   async onModuleInit(): Promise<void> {
     this.rewind();
-
-    const existing = await this.machineRepository.findAllWithLastPosition();
-    const existingIds = new Set(existing.map((machine) => machine.id));
-    const missing = SEED.machines.filter(
-      (machine) => !existingIds.has(machine.id),
-    );
-
-    for (const machine of missing) {
-      await this.machineRepository.saveMachine({
-        id: machine.id,
-        name: machine.name,
-      });
-    }
-
-    if (missing.length > 0) {
-      const names = missing.map((machine) => machine.name).join(', ');
-      this.logger.log(`${missing.length} dameuse(s) créée(s) : ${names}`);
-    }
+    await this.seedMissingMachines();
   }
 
   onModuleDestroy(): void {
@@ -76,37 +59,68 @@ export class SimulationService implements OnModuleInit, OnModuleDestroy {
     this.logger.log('Simulation réinitialisée');
   }
 
+  private async seedMissingMachines(): Promise<void> {
+    const existing = await this.machineRepository.findAllWithLastPosition();
+    const existingIds = new Set(existing.map((machine) => machine.id));
+    const missing = SEED.machines.filter(
+      (machine) => !existingIds.has(machine.id),
+    );
+
+    for (const machine of missing) {
+      await this.machineRepository.saveMachine({
+        id: machine.id,
+        name: machine.name,
+      });
+    }
+
+    if (missing.length > 0) {
+      const names = missing.map((machine) => machine.name).join(', ');
+      this.logger.log(`${missing.length} dameuse(s) créée(s) : ${names}`);
+    }
+  }
+
   private tick(): void {
-    let moved = false;
+    const moved = SEED.machines.map((machine) =>
+      this.replayNextPosition(machine),
+    );
 
-    for (const machine of SEED.machines) {
-      const cursor = this.cursors.get(machine.id) ?? 0;
-      if (cursor >= machine.positions.length) {
-        continue;
-      }
+    if (!moved.some(Boolean)) {
+      this.finish();
+    }
+  }
 
-      const point = machine.positions[cursor];
+  private replayNextPosition(machine: SeedMachine): boolean {
+    const cursor = this.cursors.get(machine.id) ?? 0;
+    const point = machine.positions[cursor];
+    if (!point) {
+      return false;
+    }
 
+    this.cursors.set(machine.id, cursor + 1);
+    this.broadcastAndPersist(machine.id, point);
+    return true;
+  }
+
+  private broadcastAndPersist(machineId: string, point: SeedPosition): void {
+    try {
       this.streaming.emitPosition({
-        machineId: machine.id,
+        machineId,
         lat: point.lat,
         lng: point.lng,
         timestamp: point.timestamp,
       });
 
       void this.persistPosition({
-        machineId: machine.id,
+        machineId,
         lat: point.lat,
         lng: point.lng,
         timestamp: new Date(point.timestamp),
       });
-
-      this.cursors.set(machine.id, cursor + 1);
-      moved = true;
-    }
-
-    if (!moved) {
-      this.finish();
+    } catch (error) {
+      this.logger.error(
+        `Échec du traitement d'une position pour ${machineId}`,
+        error instanceof Error ? error.stack : undefined,
+      );
     }
   }
 

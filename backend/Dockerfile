@@ -1,5 +1,5 @@
 # ---- Base ----
-FROM node:22.15.0-alpine AS base
+FROM node:22.19.0-alpine AS base
 WORKDIR /app
 ENV NODE_ENV=development
 

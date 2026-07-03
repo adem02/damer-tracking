@@ -115,15 +115,16 @@ export class PrismaMachineRepository implements MachineRepository {
   ): Promise<number> {
     const rows = await this.prisma.$queryRaw<DistanceRow[]>`
       SELECT COALESCE(
-        ST_Length(ST_MakeLine(location ORDER BY timestamp)::geography),
+        ST_Length(
+          ST_Intersection(
+            ST_MakeLine(location ORDER BY timestamp),
+            ST_SetSRID(ST_GeomFromGeoJSON(${JSON.stringify(zone)}), 4326)
+          )::geography
+        ),
         0
       ) AS distance
       FROM positions
       WHERE machine_id = ${machineId}
-        AND ST_Within(
-          location,
-          ST_SetSRID(ST_GeomFromGeoJSON(${JSON.stringify(zone)}), 4326)
-        )
     `;
 
     return rows[0]?.distance ?? 0;
@@ -153,7 +154,6 @@ export class PrismaMachineRepository implements MachineRepository {
     await this.prisma.$executeRaw`DELETE FROM positions`;
   }
 
-  /** Reconstruit une Machine avec sa dernière position (si elle existe). */
   private toMachine(row: MachineWithPositionRow): Machine {
     const machine: Machine = { id: row.id, name: row.name };
 
