@@ -1,4 +1,4 @@
-import { GeoPolygon } from './tracking.types';
+import { GeoPolygon } from '../../machines/domain/machine.types';
 
 export const ANALYSIS_ZONE: GeoPolygon = {
   type: 'Polygon',

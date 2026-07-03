@@ -1,10 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ANALYSIS_ZONE } from './domain/zone.constant';
-import type { Machine, Position } from './domain/tracking.types';
+import type { Machine, Position } from '../machines/domain/machine.types';
 import {
   MACHINE_REPOSITORY,
   type MachineRepository,
-} from './domain/machine.repository';
+} from '../machines/domain/machine.repository';
 
 @Injectable()
 export class TrackingService {

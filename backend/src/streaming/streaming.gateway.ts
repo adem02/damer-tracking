@@ -17,4 +17,8 @@ export class StreamingGateway implements StreamingGatewayInterface {
   emitPosition(position: Position): void {
     this.server.emit('position', position);
   }
+
+  emitSimulationFinished(): void {
+    this.server.emit('simulation-finished');
+  }
 }

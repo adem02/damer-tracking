@@ -1,4 +1,4 @@
-import { Machine, NewPosition, Position, GeoPolygon } from './tracking.types';
+import { Machine, NewPosition, Position, GeoPolygon } from './machine.types';
 
 export interface MachineRepository {
   findAllWithLastPosition(): Promise<Machine[]>;
