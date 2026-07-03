@@ -12,6 +12,8 @@ const EMPTY_METRICS: SpatialMetrics = {
   distancesInZone: {},
 };
 
+const METRICS_REFRESH_EVERY = 5;
+
 function toWaitingState(machine: ApiMachine): MachineState {
   return {
     id: machine.id,
@@ -35,30 +37,12 @@ export function useMachines() {
     orderRef.current = order;
   }, [order]);
 
+  const positionCount = useRef(0);
+
   const loadMachines = useCallback(async () => {
     const list = await api.getMachines();
     setOrder(list.map((machine) => machine.id));
     setMachines(new Map(list.map((m) => [m.id, toWaitingState(m)])));
-  }, []);
-
-  const applyPosition = useCallback((position: LivePosition) => {
-    setMachines((previous) => {
-      const machine = previous.get(position.machineId);
-      if (!machine) {
-        return previous;
-      }
-
-      const point = { lat: position.lat, lng: position.lng };
-      const next = new Map(previous);
-      next.set(position.machineId, {
-        ...machine,
-        status: 'active',
-        current: point,
-        trace: [...machine.trace, point],
-        lastTimestamp: position.timestamp,
-      });
-      return next;
-    });
   }, []);
 
   const refreshMetrics = useCallback(async () => {
@@ -69,7 +53,36 @@ export function useMachines() {
     setMetrics(await fetchSpatialMetrics(ids));
   }, []);
 
+  const applyPosition = useCallback(
+    (position: LivePosition) => {
+      setMachines((previous) => {
+        const machine = previous.get(position.machineId);
+        if (!machine) {
+          return previous;
+        }
+
+        const point = { lat: position.lat, lng: position.lng };
+        const next = new Map(previous);
+        next.set(position.machineId, {
+          ...machine,
+          status: 'active',
+          current: point,
+          trace: [...machine.trace, point],
+          lastTimestamp: position.timestamp,
+        });
+        return next;
+      });
+
+      positionCount.current += 1;
+      if (positionCount.current % METRICS_REFRESH_EVERY === 0) {
+        void refreshMetrics();
+      }
+    },
+    [refreshMetrics],
+  );
+
   const reset = useCallback(() => {
+    positionCount.current = 0;
     setMetrics(EMPTY_METRICS);
     setMachines((previous) => {
       const next = new Map<string, MachineState>();

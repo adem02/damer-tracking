@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api } from './api';
-import { config } from './config';
 import { MachineMap } from './components/MachineMap';
 import { Sidebar } from './components/Sidebar';
 import { useMachines } from './hooks/useMachines';
@@ -17,12 +16,10 @@ function App() {
     reset,
   } = useMachines();
 
-  const [running, setRunning] = useState(false);
   const [finished, setFinished] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const onFinished = useCallback(() => {
-    setRunning(false);
     setFinished(true);
     void refreshMetrics();
   }, [refreshMetrics]);
@@ -33,26 +30,11 @@ function App() {
     void loadMachines();
   }, [loadMachines]);
 
-  const refreshRef = useRef(refreshMetrics);
-  useEffect(() => {
-    refreshRef.current = refreshMetrics;
-  }, [refreshMetrics]);
-  useEffect(() => {
-    if (!running) {
-      return;
-    }
-    const interval = setInterval(() => {
-      void refreshRef.current();
-    }, config.metricsRefreshMs);
-    return () => clearInterval(interval);
-  }, [running]);
-
   const handleStart = useCallback(async () => {
     setBusy(true);
     try {
       await api.startSimulation();
       setFinished(false);
-      setRunning(true);
     } finally {
       setBusy(false);
     }
@@ -62,7 +44,6 @@ function App() {
     setBusy(true);
     try {
       await api.resetSimulation();
-      setRunning(false);
       setFinished(false);
       reset();
     } finally {
