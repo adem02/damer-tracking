@@ -1,0 +1,196 @@
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  height: 100svh;
+}
+
+/* --- Carte --- */
+.map {
+  height: 100%;
+  width: 100%;
+}
+
+.machine-marker {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  overflow-y: auto;
+  background: #1b1d26;
+  color: #f3f4f6;
+  border-right: 1px solid #2c2f3a;
+}
+
+.sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sidebar__header h1 {
+  font-size: 1.15rem;
+  margin: 0;
+}
+
+.connection {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.connection::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.connection--connected {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.12);
+}
+
+.connection--disconnected {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.12);
+}
+
+/* --- Contrôles --- */
+.controls {
+  display: flex;
+  gap: 10px;
+}
+
+.controls button {
+  flex: 1;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #4363d8;
+  color: #fff;
+}
+
+.controls button:hover:not(:disabled) {
+  background: #3550bd;
+}
+
+.controls .button--secondary {
+  background: #3a3d4a;
+}
+
+.controls .button--secondary:hover:not(:disabled) {
+  background: #474b5b;
+}
+
+.controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.banner {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.banner--finished {
+  background: rgba(67, 99, 216, 0.15);
+  color: #a5b4fc;
+}
+
+/* --- Métriques --- */
+.metrics h2,
+.machines h2 {
+  font-size: 0.95rem;
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #4363d8;
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+/* --- Liste des dameuses --- */
+.machine-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.machine-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #23262f;
+}
+
+.machine-row__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.machine-row__name {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.machine-row__distance {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+}
+
+.tag {
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.tag--waiting {
+  background: rgba(148, 163, 184, 0.18);
+  color: #cbd5e1;
+}
+
+.tag--in-zone {
+  background: rgba(52, 211, 153, 0.16);
+  color: #34d399;
+}
