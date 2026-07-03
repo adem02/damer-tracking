@@ -56,7 +56,7 @@ la lisibilité et à la maintenabilité.
 
 | Module       | Responsabilité                                                                                                                                              |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `machines`   | Cœur du domaine : entités, port `MachineRepository` et son adaptateur Prisma/PostGIS. Partagé par les autres modules.                                       |
+| `machines`   | Domaine des dameuses : entités et port `MachineRepository`. Son implémentation Prisma/PostGIS vit dans une couche `infrastructure` séparée. Module partagé par les autres. |
 | `tracking`   | API REST de consultation : positions courantes, présence en zone, trace, distance parcourue dans la zone.                                                   |
 | `simulation` | Rejoue les positions du jeu de données et pilote le cycle de vie de la simulation.                                                                          |
 | `streaming`  | Diffusion temps réel des positions via WebSocket.                                                                                                           |
