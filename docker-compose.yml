@@ -24,6 +24,9 @@ services:
       target: development
     container_name: damer-backend
     restart: unless-stopped
+    # Écrit sur le volume monté avec l'UID de l'hôte (évite les fichiers root
+    # dans src/common/prisma/generated).
+    user: "${UID:-1000}:${GID:-1000}"
     environment:
       NODE_ENV: ${NODE_ENV}
       PORT: ${BACKEND_PORT}
