@@ -7,6 +7,7 @@ export interface Position {
 
 export interface StreamingGateway {
   emitPosition(position: Position): void;
+  emitSimulationFinished(): void;
 }
 
 export const STREAMING_GATEWAY = Symbol('StreamingGateway');

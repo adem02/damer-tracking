@@ -15,4 +15,8 @@ export class StreamingService {
   emitPosition(position: Position) {
     this.gateway.emitPosition(position);
   }
+
+  notifySimulationFinished() {
+    this.gateway.emitSimulationFinished();
+  }
 }

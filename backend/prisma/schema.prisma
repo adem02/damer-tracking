@@ -1,0 +1,37 @@
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/common/prisma/generated"
+  moduleFormat    = "cjs"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [postgis]
+}
+
+model Machine {
+  // Les dameuses ont un id métier ("alpha", "bravo", ...), pas un uuid.
+  id        String     @id
+  name      String
+  positions Position[]
+
+  @@map("machines")
+}
+
+model Position {
+  id        String   @id @default(uuid())
+  machineId String   @map("machine_id")
+  machine   Machine  @relation(fields: [machineId], references: [id], onDelete: Cascade)
+
+  // Point géographique stocké en PostGIS (SRID 4326 = WGS84 lat/lng).
+  location  Unsupported("geometry(Point, 4326)")
+
+  timestamp DateTime
+
+  // Index spatial pour les requêtes de zone (ST_Within, ST_DWithin, ...).
+  @@index([location], type: Gist)
+  // Index pour la trace d'une dameuse sur une période.
+  @@index([machineId, timestamp])
+  @@map("positions")
+}

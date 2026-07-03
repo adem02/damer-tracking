@@ -4,8 +4,8 @@ import { ANALYSIS_ZONE } from './domain/zone.constant';
 import {
   MACHINE_REPOSITORY,
   type MachineRepository,
-} from './domain/machine.repository';
-import type { Machine, Position } from './domain/tracking.types';
+} from '../machines/domain/machine.repository';
+import type { Machine, Position } from '../machines/domain/machine.types';
 
 describe('TrackingService', () => {
   let service: TrackingService;

@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { MACHINE_REPOSITORY } from './domain/machine.repository';
 import { TrackingService } from './tracking.service';
 import { TrackingController } from './tracking.controller';
+import { MachinesModule } from '../machines/machines.module';
 
 @Module({
+  imports: [MachinesModule],
   controllers: [TrackingController],
   providers: [TrackingService],
-  exports: [MACHINE_REPOSITORY],
 })
 export class TrackingModule {}
