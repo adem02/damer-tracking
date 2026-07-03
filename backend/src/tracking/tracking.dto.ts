@@ -5,6 +5,7 @@ import {
   ValidationArguments,
   ValidationOptions,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 function IsAfter(property: string, validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
@@ -35,10 +36,18 @@ function IsAfter(property: string, validationOptions?: ValidationOptions) {
 }
 
 export class GetMachineTraceDto {
+  @ApiProperty({
+    description: 'Début de la période (ISO 8601)',
+    example: '2026-01-15T09:00:00Z',
+  })
   @IsNotEmpty()
   @IsDateString()
   from!: string;
 
+  @ApiProperty({
+    description: 'Fin de la période (ISO 8601), postérieure à `from`',
+    example: '2026-01-15T09:22:00Z',
+  })
   @IsNotEmpty()
   @IsDateString()
   @IsAfter('from')

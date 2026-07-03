@@ -138,7 +138,6 @@ describe('SimulationService', () => {
       jest.useFakeTimers();
       service.start();
 
-      // Une itération de plus que la trace la plus longue pour atteindre la fin.
       await jest.advanceTimersByTimeAsync(TICK_MS * (MAX_POSITIONS + 1));
 
       expect(streaming.emitPosition).toHaveBeenCalledTimes(TOTAL_POSITIONS);
@@ -149,7 +148,6 @@ describe('SimulationService', () => {
   describe('persistence retries', () => {
     it('retries a failed save and succeeds without logging an error', async () => {
       jest.useFakeTimers();
-      // Le premier essai de chaque machine échoue, le suivant réussit.
       for (let i = 0; i < MACHINE_COUNT; i++) {
         repository.savePosition.mockRejectedValueOnce(new Error('flaky'));
       }
