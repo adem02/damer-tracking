@@ -11,7 +11,6 @@ datasource db {
 }
 
 model Machine {
-  // Les dameuses ont un id métier ("alpha", "bravo", ...), pas un uuid.
   id        String     @id
   name      String
   positions Position[]
@@ -24,14 +23,11 @@ model Position {
   machineId String   @map("machine_id")
   machine   Machine  @relation(fields: [machineId], references: [id], onDelete: Cascade)
 
-  // Point géographique stocké en PostGIS (SRID 4326 = WGS84 lat/lng).
   location  Unsupported("geometry(Point, 4326)")
 
   timestamp DateTime
 
-  // Index spatial pour les requêtes de zone (ST_Within, ST_DWithin, ...).
   @@index([location], type: Gist)
-  // Index pour la trace d'une dameuse sur une période.
   @@index([machineId, timestamp])
   @@map("positions")
 }
