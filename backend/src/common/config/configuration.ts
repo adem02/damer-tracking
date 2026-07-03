@@ -1,7 +1,3 @@
-/**
- * Configuration typée exposée via ConfigService.
- * Regroupe les variables d'environnement validées en objets exploitables.
- */
 export const configuration = () => ({
   nodeEnv: process.env.NODE_ENV as 'development' | 'production' | 'test',
   port: parseInt(process.env.PORT ?? '3000', 10),

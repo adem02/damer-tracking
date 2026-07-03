@@ -15,10 +15,6 @@ export enum Environment {
   Test = 'test',
 }
 
-/**
- * Représente et valide les variables d'environnement de l'application.
- * Toute variable invalide ou manquante empêche le démarrage.
- */
 export class EnvironmentVariables {
   @IsEnum(Environment)
   NODE_ENV: Environment = Environment.Development;
@@ -53,10 +49,6 @@ export class EnvironmentVariables {
   DATABASE_URL!: string;
 }
 
-/**
- * Fonction de validation branchée sur ConfigModule.forRoot({ validate }).
- * Convertit et valide les variables d'environnement au démarrage.
- */
 export function validate(
   config: Record<string, unknown>,
 ): EnvironmentVariables {
